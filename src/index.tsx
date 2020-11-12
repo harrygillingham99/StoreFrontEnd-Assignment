@@ -1,14 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import "./styles/index.css";
+import App from "./App";
+import reportWebVitals from "./utils/reportWebVitals";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { SearchContainer } from "./state/SearchState";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <SearchContainer.Provider>
+        <App />
+      </SearchContainer.Provider>
+    </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
