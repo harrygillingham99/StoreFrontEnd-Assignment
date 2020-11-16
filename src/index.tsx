@@ -5,15 +5,10 @@ import "./styles/index.css";
 import App from "./App";
 import reportWebVitals from "./utils/reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { SearchContainer } from "./state/SearchState";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <SearchContainer.Provider>
+  <React.StrictMode>    
         <App />
-      </SearchContainer.Provider>
-    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );
