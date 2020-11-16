@@ -8,3 +8,9 @@ test('renders learn react link', () => {
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });
+
+test('renders navigation bar', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/Store Front End/i);
+  expect(linkElement).toBeInTheDocument();
+});
