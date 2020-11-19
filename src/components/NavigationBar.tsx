@@ -1,37 +1,83 @@
 import React from "react";
-import {Button, Navbar, Nav, NavDropdown, Form, FormControl} from 'react-bootstrap'
-import { SearchContainer } from "../state/SearchState";
+import { Navbar, Nav, DropdownButton, Dropdown } from "react-bootstrap";
+import { AppContainer } from "../state/AppState";
 import { Routes } from "../types/Routes";
+import loggedIn from "../assets/user.svg";
+import loggedOut from "../assets/user-x.svg";
+import firebase from "firebase";
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
 const NavigationBar = () => {
-  const {searchState, setSearchState} = SearchContainer.useContainer();
+  const { setUser, user, toggleAccountModal } = AppContainer.useContainer();
+  const signInWithGoogle = async () => {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    var result = await firebase
+      .auth()
+      .signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    setUser(result.user ?? undefined);
+  };
+  const signInAnonymously = async () => {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    var result = await firebase.auth().signInAnonymously();
+    setUser(result.user ?? undefined);
+  };
+  const signOut = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => setUser(undefined));
+  };
+  const isLoggedIn = user !== undefined;
   return (
     <Navbar bg="light" expand="lg">
       <Navbar.Brand href="#home">Store Front End</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
-        <Nav.Link href={Routes.Home}>Home</Nav.Link>
-          <Nav.Link href={Routes.Page1}>TestRouter</Nav.Link>
-          <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">
-              Another action
-            </NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">
-              Separated link
-            </NavDropdown.Item>
-          </NavDropdown>
+        <Nav className="mr-auto justify-content-end">
+          <Nav.Link href={Routes.Home}>Home</Nav.Link>
         </Nav>
-        <Form inline>
-          <FormControl type="text" placeholder="Search" className="mr-sm-2" onChange={({target}) => setSearchState({searchText: target.value}) } />
-          <Button variant="outline-success">Search</Button>
-        </Form>
+        <Nav className="justify-content-end">
+          <DropdownButton
+            id="basic-nav-dropdown"
+            variant="outline-dark"
+            menuAlign="right"
+            className="list-unstyled"
+            title={
+              <img alt="account icon" src={isLoggedIn ? loggedIn : loggedOut} />
+            }
+          >
+            <>
+              {!isLoggedIn && (
+                <>
+                  <Dropdown.Item onClick={signInWithGoogle}>
+                    Login with Google
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={signInAnonymously}>
+                    Login as Guest
+                  </Dropdown.Item>
+                </>
+              )}
+              {isLoggedIn && (
+                <>
+                  <Dropdown.Item onClick={() => toggleAccountModal(true)}>
+                    Account
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={signOut}>Sign Out</Dropdown.Item>
+                </>
+              )}
+            </>
+            <FirebaseAuthConsumer>
+              {({ isSignedIn, user }) => {
+              if (isSignedIn === true) {
+                setUser(user)
+              } else {
+                setUser(undefined);
+              }}}</FirebaseAuthConsumer>
+          </DropdownButton>
+        </Nav>
       </Navbar.Collapse>
     </Navbar>
   );
 };
 
-export default NavigationBar
+export default NavigationBar;
