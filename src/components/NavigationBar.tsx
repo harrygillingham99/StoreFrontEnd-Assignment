@@ -27,8 +27,16 @@ const NavigationBar = () => {
       .signOut()
       .then(() => setUser(undefined));
   };
-  const isLoggedIn = user !== undefined;
+
+  const setLoggedInUser = (user: firebase.User | undefined) => {
+    setUser(user)
+  }
+ 
+  const isLoggedIn = user !== undefined && firebase.auth().currentUser !== null;
+
+  console.log(isLoggedIn)
   return (
+    <>
     <Navbar bg="light" expand="lg">
       <Navbar.Brand href="#home">Store Front End</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -66,17 +74,21 @@ const NavigationBar = () => {
                 </>
               )}
             </>
-            <FirebaseAuthConsumer>
-              {({ isSignedIn, user }) => {
-              if (isSignedIn === true) {
-                setUser(user)
-              } else {
-                setUser(undefined);
-              }}}</FirebaseAuthConsumer>
+            
           </DropdownButton>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
+    <FirebaseAuthConsumer>
+    {({ isSignedIn, user }) => {
+      if (isSignedIn === true) {
+        setLoggedInUser(user)
+      } else {
+        setLoggedInUser(undefined)
+      }
+    }}
+    </FirebaseAuthConsumer>
+    </>
   );
 };
 
