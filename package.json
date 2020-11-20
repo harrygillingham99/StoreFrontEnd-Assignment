@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && gcloud app deploy --stop-previous-version"
+    "deploy": "npm run build && gcloud app deploy --stop-previous-version",
+    "generate-store-client" : "nswag run ./store-api.nswag /runtime:WinX64"
   },
   "eslintConfig": {
     "extends": [
@@ -48,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "nswag": "^13.9.4"
   }
 }
