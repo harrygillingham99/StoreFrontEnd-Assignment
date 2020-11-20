@@ -7,20 +7,23 @@ import { SearchContainer } from "./state/SearchState";
 import "firebase/auth";
 import { FirebaseAuthProvider } from "@react-firebase/auth";
 import firebase from "firebase/app";
-import { firebaseConfig } from "./utils/firebase";
+import { firebaseConfig } from "./utils/Firebase";
 import { AppContainer } from "./state/AppState";
 import { CardDeck, Card } from "react-bootstrap";
 import { data } from "./utils/fakeData";
 import { AccountModal } from "./components/AccountModal";
+import { AppAlert } from "./components/AppAlert";
+import { AppAlertContainer } from "./state/AppAlertState";
 
 function App() {
-  
   return (
     <AppContainer.Provider>
+      <AppAlertContainer.Provider>
       <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
         <BrowserRouter>
           <SearchContainer.Provider>
             <NavigationBar />
+            <AppAlert />
             <Switch>
               <Route exact path="/">
                 <Redirect to="/home" />
@@ -39,9 +42,7 @@ function App() {
                         </Card.Text>
                       </Card.Body>
                       <Card.Footer>
-                        <small className="text-muted">
-                          Last updated 3 mins ago
-                        </small>
+                        <small className="text-muted">Added:</small>
                       </Card.Footer>
                     </Card>
                   ))}
@@ -59,6 +60,7 @@ function App() {
           </SearchContainer.Provider>
         </BrowserRouter>
       </FirebaseAuthProvider>
+      </AppAlertContainer.Provider>
     </AppContainer.Provider>
   );
 }

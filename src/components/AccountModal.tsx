@@ -1,3 +1,4 @@
+import { Console } from "console";
 import React from "react";
 import { Modal, Button, Image } from "react-bootstrap";
 import { AppContainer } from "../state/AppState";
@@ -28,6 +29,7 @@ export const AccountModal = () => {
     );
   };
 
+  console.log(user);
   return (
     <Modal show={showAccountModal}>
       {!user?.isAnonymous ? (
