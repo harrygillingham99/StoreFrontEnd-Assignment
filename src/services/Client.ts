@@ -10,7 +10,7 @@
 import ClientBase from "./ClientBase";
 
 export interface IClient {
-    products_Get(): Promise<string[]>;
+    productsGet(): Promise<StoreItem[]>;
 }
 
 export class Client extends ClientBase implements IClient {
@@ -24,8 +24,8 @@ export class Client extends ClientBase implements IClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44307";
     }
 
-    products_Get(): Promise<string[]> {
-        let url_ = this.baseUrl + "/Products";
+    productsGet(): Promise<StoreItem[]> {
+        let url_ = this.baseUrl + "/Products/get";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -38,11 +38,11 @@ export class Client extends ClientBase implements IClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.transformResult(url_, _response, (_response: Response) => this.processProducts_Get(_response));
+            return this.transformResult(url_, _response, (_response: Response) => this.processProductsGet(_response));
         });
     }
 
-    protected processProducts_Get(response: Response): Promise<string[]> {
+    protected processProductsGet(response: Response): Promise<StoreItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -52,7 +52,7 @@ export class Client extends ClientBase implements IClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(item);
+                    result200!.push(StoreItem.fromJS(item));
             }
             return result200;
             });
@@ -61,8 +61,52 @@ export class Client extends ClientBase implements IClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string[]>(<any>null);
+        return Promise.resolve<StoreItem[]>(<any>null);
     }
+}
+
+export class StoreItem implements IStoreItem {
+    name?: string | undefined;
+    productDescription?: string | undefined;
+    price?: number;
+
+    constructor(data?: IStoreItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.productDescription = _data["productDescription"];
+            this.price = _data["price"];
+        }
+    }
+
+    static fromJS(data: any): StoreItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new StoreItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["productDescription"] = this.productDescription;
+        data["price"] = this.price;
+        return data; 
+    }
+}
+
+export interface IStoreItem {
+    name?: string | undefined;
+    productDescription?: string | undefined;
+    price?: number;
 }
 
 export class SwaggerException extends Error {

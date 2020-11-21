@@ -21,7 +21,6 @@ const NavigationBar = () => {
 
   const isLoggedIn = user !== undefined && firebase.auth().currentUser !== null;
 
-  console.log(isLoggedIn);
   return (
     <>
       <Navbar className="navbar navbar-dark bg-dark">

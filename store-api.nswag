@@ -39,7 +39,7 @@
       "useTransformOptionsMethod": true,
       "useTransformResultMethod": true,
       "generateDtoTypes": true,
-      "operationGenerationMode": "SingleClientFromOperationId",
+      "operationGenerationMode": "SingleClientFromPathSegments",
       "markOptionalProperties": true,
       "generateCloneMethod": false,
       "typeStyle": "Class",

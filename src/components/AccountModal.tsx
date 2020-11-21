@@ -29,7 +29,6 @@ export const AccountModal = () => {
     );
   };
 
-  console.log(user);
   return (
     <Modal show={showAccountModal}>
       {!user?.isAnonymous ? (
