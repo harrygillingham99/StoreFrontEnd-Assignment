@@ -1,3 +1,4 @@
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import React from "react";
 import Switch from "react-bootstrap/esm/Switch";
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
@@ -5,23 +6,28 @@ import { AccountModal } from "./components/AccountModal";
 import { AppAlert } from "./components/AppAlert";
 import NavigationBar from "./components/NavigationBar";
 import { ProductContainer } from "./components/ProductContainer";
-import apiClient from "./services";
-import { StoreItem } from "./services/Client";
+import { Product } from "./services/Client";
 import { AppAlertContainer } from "./state/AppAlertState";
 import { AppContainer } from "./state/AppState";
 import { SearchContainer } from "./state/SearchState";
 import { Routes } from "./types/Routes";
-
+import { GetProducts } from "./utils/Products";
+import firebase from "firebase";
 
 export const Router = () => {
-  const {user} = AppContainer.useContainer();
-  const [products, setProducts] = React.useState<StoreItem[]>();
   const {ToggleAlert} = AppAlertContainer.useContainer();
+  const { setUser, setProducts } = AppContainer.useContainer();
 
+  const setLoggedInUser = (user: firebase.User | undefined) => setUser(user);
+  
   React.useEffect(() => {
     const fetchProducts = async () => {
-    try{const result = await apiClient.productsGet();
-        setProducts(result);}
+    try{const result = await GetProducts();
+        if(result)
+        {
+        setProducts(result);
+        }
+        else throw new Error("Failed to get products")}
     catch(ex) {
         ToggleAlert(true, "danger", "Error!", "Failed to fetch the latest products")
     }
@@ -30,6 +36,7 @@ export const Router = () => {
   }, []);
 
   return (
+    <>
     <BrowserRouter>
       <SearchContainer.Provider>
         <NavigationBar />
@@ -39,11 +46,11 @@ export const Router = () => {
             <Redirect to="/home" />
           </Route>
           <Route path={Routes.Home}>
-            <ProductContainer products={products} />
+            <ProductContainer />
           </Route>
           <Route path={Routes.Account}>
-            <div className="App">
-              <header className="App-header">
+            <div className="">
+              <header className="">
                 <p>We be routing</p>
               </header>
             </div>
@@ -51,6 +58,17 @@ export const Router = () => {
         </Switch>
         <AccountModal />
       </SearchContainer.Provider>
+  
     </BrowserRouter>
+        <FirebaseAuthConsumer>
+        {({ isSignedIn, user }) => {
+          if (isSignedIn === true) {
+            setLoggedInUser(user);
+          } else {
+            setLoggedInUser(undefined);
+          }
+        }}
+      </FirebaseAuthConsumer>
+      </>
   );
 };

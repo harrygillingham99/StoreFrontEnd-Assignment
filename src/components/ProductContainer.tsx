@@ -1,30 +1,41 @@
 import React from "react";
-import { Card, CardDeck, Spinner } from "react-bootstrap";
-import { StoreItem } from "../services/Client";
+import { Card, Button, CardGroup, Col, Image, Row, Spinner } from "react-bootstrap";
+import { Product } from "../services/Client";
+import { AppAlertContainer } from "../state/AppAlertState";
+import { AppContainer } from "../state/AppState";
 
-interface IProductContainerProps {
-  products?: StoreItem[];
-}
-export const ProductContainer = (props: IProductContainerProps) => {
-
-  return props.products !== undefined ? (
-    <CardDeck className="m-2">
-      {props.products?.map(({ name, price }) => (
-        <Card>
-          <Card.Img variant="top" src="holder.js/100px160" />
-          <Card.Body>
-            <Card.Title>{name}</Card.Title>
-            <Card.Text>
-              This is a wider card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer. {price}
-            </Card.Text>
-          </Card.Body>
-          <Card.Footer>
-            <small className="text-muted">Added:</small>
-          </Card.Footer>
-        </Card>
-      ))}
-    </CardDeck>
-  ): <Spinner animation={"border"}></Spinner>;
+export const ProductContainer = () => {
+  const {alert} = AppAlertContainer.useContainer();
+  const {AddItemToBasket, products} = AppContainer.useContainer();
+  return products !== undefined ? (
+      <CardGroup style={{width: '100%'}}>
+      <Row className="mt-4">
+        {products?.map(
+          ({ name, description, pricePerUnit, imageUrl, dateCreated, id }) => (
+              <Col md={2} className="m-2">
+              <Card style={{ height: "100%"}}>
+              <Card.Body>
+              <Card.Title className='text-center'>{name}</Card.Title>
+                <Image src={imageUrl} thumbnail />
+                  <Card.Text>{description}</Card.Text>
+                  <Card.Text>Price per unit: £{pricePerUnit}</Card.Text>
+                </Card.Body>
+                <Card.Footer>
+                <Button onClick={() =>AddItemToBasket(id)} title="Add to basket">Add To Basket</Button>
+                </Card.Footer>
+                <Card.Footer>
+                  <small className="text-muted">Added: {dateCreated?.toDateString()}</small>
+                  </Card.Footer>
+              </Card>
+              </Col>
+          )     
+        )}
+        </Row>
+      </CardGroup>
+      
+  ) : !alert.showAlert ? (
+    <div className="text-center">
+      <Spinner animation={"border"}></Spinner>
+    </div>)
+   : (<></>)
 };

@@ -5,19 +5,15 @@ import { Routes } from "../types/Routes";
 import loggedIn from "../assets/user.svg";
 import loggedOut from "../assets/user-x.svg";
 import firebase from "firebase";
-import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import {
   signInWithGoogle,
   signInAnonymously,
   signOut
 } from "../utils/Firebase";
+import { CartMenu } from "./CartMenu";
 
 const NavigationBar = () => {
   const { setUser, user, toggleAccountModal } = AppContainer.useContainer();
-
-  const setLoggedInUser = (user: firebase.User | undefined) => {
-    setUser(user);
-  };
 
   const isLoggedIn = user !== undefined && firebase.auth().currentUser !== null;
 
@@ -31,6 +27,7 @@ const NavigationBar = () => {
             <Nav.Link href={Routes.Home}>Home</Nav.Link>
           </Nav>
           <Nav className="justify-content-end">
+            <CartMenu show={isLoggedIn}/>
             <DropdownButton
               id="basic-nav-dropdown"
               variant="light"
@@ -69,15 +66,6 @@ const NavigationBar = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <FirebaseAuthConsumer>
-        {({ isSignedIn, user }) => {
-          if (isSignedIn === true) {
-            setLoggedInUser(user);
-          } else {
-            setLoggedInUser(undefined);
-          }
-        }}
-      </FirebaseAuthConsumer>
     </>
   );
 };
