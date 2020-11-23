@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Button, CardGroup, Col, Image, Row, Spinner } from "react-bootstrap";
 import { AppAlertContainer } from "../state/AppAlertState";
 import { AppContainer } from "../state/AppState";
+import { Loader } from "./Loader";
 
 export const ProductContainer = () => {
   const {alert} = AppAlertContainer.useContainer();
@@ -34,7 +35,7 @@ export const ProductContainer = () => {
       
   ) : !alert.showAlert ? (
     <div className="text-center">
-      <Spinner animation={"border"}></Spinner>
+      <Loader />
     </div>)
    : (<></>)
 };
