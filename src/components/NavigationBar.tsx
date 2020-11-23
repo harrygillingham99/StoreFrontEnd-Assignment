@@ -8,9 +8,10 @@ import firebase from "firebase";
 import {
   signInWithGoogle,
   signInAnonymously,
-  signOut
+  signOut,
 } from "../utils/Firebase";
 import { CartMenu } from "./CartMenu";
+import { IfFirebaseAuthed, IfFirebaseUnAuthed } from "@react-firebase/auth";
 
 const NavigationBar = () => {
   const { setUser, user, toggleAccountModal } = AppContainer.useContainer();
@@ -27,7 +28,7 @@ const NavigationBar = () => {
             <Nav.Link href={Routes.Home}>Home</Nav.Link>
           </Nav>
           <Nav className="justify-content-end">
-            <CartMenu show={isLoggedIn}/>
+            <CartMenu show={isLoggedIn} />
             <DropdownButton
               id="basic-nav-dropdown"
               variant="light"
@@ -41,26 +42,33 @@ const NavigationBar = () => {
               }
             >
               <>
-                {!isLoggedIn && (
-                  <>
-                    <Dropdown.Item onClick={() => signInWithGoogle(setUser)}>
-                      Login with Google
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => signInAnonymously(setUser)}>
-                      Login as Guest
-                    </Dropdown.Item>
-                  </>
-                )}
-                {isLoggedIn && (
-                  <>
-                    <Dropdown.Item onClick={() => toggleAccountModal(true)}>
-                      Account
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => signOut(setUser)}>
-                      Sign Out
-                    </Dropdown.Item>
-                  </>
-                )}
+                <IfFirebaseUnAuthed>
+                  {() => (
+                    <>
+                      <Dropdown.Item onClick={() => signInWithGoogle(setUser)}>
+                        Login with Google
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => signInAnonymously(setUser)}>
+                        Login as Guest
+                      </Dropdown.Item>
+                    </>
+                  )}
+                </IfFirebaseUnAuthed>
+                <IfFirebaseAuthed>
+                  {({user}) => {
+                    
+                    return (
+                      <>
+                        <Dropdown.Item onClick={() => toggleAccountModal(true)}>
+                          Account
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => signOut(setUser)}>
+                          Sign Out
+                        </Dropdown.Item>
+                      </>
+                    );
+                  }}
+                </IfFirebaseAuthed>
               </>
             </DropdownButton>
           </Nav>

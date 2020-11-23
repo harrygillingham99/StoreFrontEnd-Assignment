@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, Button, CardGroup, Col, Image, Row, Spinner } from "react-bootstrap";
-import { Product } from "../services/Client";
 import { AppAlertContainer } from "../state/AppAlertState";
 import { AppContainer } from "../state/AppState";
 
@@ -12,7 +11,7 @@ export const ProductContainer = () => {
       <Row className="mt-4">
         {products?.map(
           ({ name, description, pricePerUnit, imageUrl, dateCreated, id }) => (
-              <Col md={2} className="m-2">
+              <Col md={2} className="m-2" key={`${id}-col`}>
               <Card style={{ height: "100%"}}>
               <Card.Body>
               <Card.Title className='text-center'>{name}</Card.Title>
