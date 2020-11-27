@@ -1,7 +1,9 @@
-import { Console } from "console";
 import React from "react";
 import { Modal, Button, Image } from "react-bootstrap";
+import { Basket } from "../services/Client";
+import { AppAlertContainer } from "../state/AppAlertState";
 import { AppContainer } from "../state/AppState";
+import { GetHistoricOrders } from "../utils/Orders";
 
 export const AccountModal = () => {
   const {
@@ -9,6 +11,32 @@ export const AccountModal = () => {
     toggleAccountModal,
     user,
   } = AppContainer.useContainer();
+  const { ToggleAlert } = AppAlertContainer.useContainer();
+  const [historicOrders, setHistoricOrders] = React.useState<
+    Basket[] | undefined
+  >(null!);
+
+  React.useEffect(() => {
+    const fetchHistoricOrders = async () => {
+      try {
+        if (user === undefined) {
+          return;
+        }
+        const result = await GetHistoricOrders(user);
+        if (result) {
+          setHistoricOrders(result);
+        } else throw new Error("Failed to get products");
+      } catch (ex) {
+        ToggleAlert(
+          true,
+          "danger",
+          "Error!",
+          "Failed to fetch the latest products"
+        );
+      }
+    };
+    fetchHistoricOrders();
+  }, [ToggleAlert, user]);
 
   const ModalFooter = () => {
     return (
@@ -36,8 +64,15 @@ export const AccountModal = () => {
           <ModalHeader displayName={user?.displayName} />
           <Modal.Body>
             <Image src={user?.photoURL ?? ""} />
-            <ModalFooter />
+            {historicOrders !== null &&
+              historicOrders !== undefined &&
+              historicOrders.map((order) => (
+                <p>
+                  {order.selectedProducts} {order.dateOrdered}
+                </p>
+              ))}
           </Modal.Body>
+          <ModalFooter />
         </>
       ) : (
         <>

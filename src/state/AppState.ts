@@ -1,7 +1,7 @@
 import React from "react";
 import firebase from "firebase/app";
 import { createContainer } from "unstated-next";
-import { Product } from "../services/Client";
+import { Categories, Product } from "../services/Client";
 
 /* 
 This is a global state container for the app.
@@ -13,22 +13,22 @@ const useAppState = () => {
   const [basket, updateBasket] = React.useState<number[]>([]);
   const [basketCount, setBasketCount] = React.useState<number>(0);
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [categories, setCategories] = React.useState<Categories[]>([]);
+  const [isAdmin, setAdmin] = React.useState<boolean>(false);
 
-  const AddItemToBasket = (itemId : number | undefined) => {
-      if(itemId === undefined)
-        return;
+  const AddItemToBasket = (itemId: number | undefined) => {
+    if (itemId === undefined) return;
 
-      if(basket.includes(itemId))
-        return;
-        
-      const currentBasket = basket;
-      setBasketCount(currentBasket.push(itemId));
-      updateBasket(currentBasket);
-  }
+    if (basket.includes(itemId)) return;
 
-  const itemsInBasket = () : Product[] => {
-    return products.filter(x => basket.includes(x.id ?? 0))
-  }
+    const currentBasket = basket;
+    setBasketCount(currentBasket.push(itemId));
+    updateBasket(currentBasket);
+  };
+
+  const itemsInBasket = (): Product[] => {
+    return products.filter((x) => basket.includes(x.id ?? 0));
+  };
 
   return {
     user,
@@ -40,7 +40,11 @@ const useAppState = () => {
     basketCount,
     products,
     setProducts,
-    itemsInBasket
+    itemsInBasket,
+    categories,
+    setCategories,
+    isAdmin,
+    setAdmin,
   };
 };
 

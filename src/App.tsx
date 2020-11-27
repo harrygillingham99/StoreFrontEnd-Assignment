@@ -8,8 +8,6 @@ import { AppContainer } from "./state/AppState";
 import { AppAlertContainer } from "./state/AppAlertState";
 import { Router } from "./Router";
 
-
-
 function App() {
   return (
     <AppContainer.Provider>

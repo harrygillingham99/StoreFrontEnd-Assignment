@@ -10,10 +10,58 @@
 import ClientBase from "./ClientBase";
 
 export interface IClient {
+    /**
+     * @return Success
+     */
+    adminIsAdmin(token: AuthedRequest): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    categoriesGet(): Promise<Categories[]>;
+    /**
+     * @return Success
+     */
+    categoriesPost(categoryToAdd: Categories): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    categoriesPut(updatedCategory: Categories): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    categoriesDelete(key: number): Promise<FileResponse>;
+    /**
+     * @return Success
+     */
     productsGet(): Promise<Product[]>;
-    productsUpdate(product: Product): Promise<boolean>;
-    productsInsert(product: Product): Promise<boolean>;
-    productsExpire(id: number): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    productsPut(product: Product): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    productsPost(product: Product): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    productsDelete(key: number): Promise<FileResponse>;
+    /**
+     * @return Success
+     */
+    sessionCurrentBasket(token: AuthedRequest): Promise<Basket>;
+    /**
+     * @return Success
+     */
+    sessionUpdateBasket(basketToUpdate: AuthedRequestWrapperOfBasket): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    sessionPlaceOrder(basketToOrder: AuthedRequestWrapperOfBasket): Promise<boolean>;
+    /**
+     * @return Success
+     */
+    sessionHistoricOrders(token: AuthedRequest): Promise<Basket[]>;
 }
 
 export class Client extends ClientBase implements IClient {
@@ -27,8 +75,248 @@ export class Client extends ClientBase implements IClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44307";
     }
 
+    /**
+     * @return Success
+     */
+    adminIsAdmin(token: AuthedRequest): Promise<boolean> {
+        let url_ = this.baseUrl + "/admin/is-admin";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(token);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processAdminIsAdmin(_response));
+        });
+    }
+
+    protected processAdminIsAdmin(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized Request", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    categoriesGet(): Promise<Categories[]> {
+        let url_ = this.baseUrl + "/categories";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processCategoriesGet(_response));
+        });
+    }
+
+    protected processCategoriesGet(response: Response): Promise<Categories[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Categories.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Categories[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    categoriesPost(categoryToAdd: Categories): Promise<boolean> {
+        let url_ = this.baseUrl + "/categories";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(categoryToAdd);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processCategoriesPost(_response));
+        });
+    }
+
+    protected processCategoriesPost(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    categoriesPut(updatedCategory: Categories): Promise<boolean> {
+        let url_ = this.baseUrl + "/categories";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updatedCategory);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processCategoriesPut(_response));
+        });
+    }
+
+    protected processCategoriesPut(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    categoriesDelete(key: number): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/categories";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(key);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processCategoriesDelete(_response));
+        });
+    }
+
+    protected processCategoriesDelete(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     productsGet(): Promise<Product[]> {
-        let url_ = this.baseUrl + "/products/get";
+        let url_ = this.baseUrl + "/products";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -59,6 +347,10 @@ export class Client extends ClientBase implements IClient {
             }
             return result200;
             });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -67,8 +359,11 @@ export class Client extends ClientBase implements IClient {
         return Promise.resolve<Product[]>(<any>null);
     }
 
-    productsUpdate(product: Product): Promise<boolean> {
-        let url_ = this.baseUrl + "/products/update";
+    /**
+     * @return Success
+     */
+    productsPut(product: Product): Promise<boolean> {
+        let url_ = this.baseUrl + "/products";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(product);
@@ -85,11 +380,11 @@ export class Client extends ClientBase implements IClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.transformResult(url_, _response, (_response: Response) => this.processProductsUpdate(_response));
+            return this.transformResult(url_, _response, (_response: Response) => this.processProductsPut(_response));
         });
     }
 
-    protected processProductsUpdate(response: Response): Promise<boolean> {
+    protected processProductsPut(response: Response): Promise<boolean> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -99,6 +394,10 @@ export class Client extends ClientBase implements IClient {
             result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return result200;
             });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -107,8 +406,11 @@ export class Client extends ClientBase implements IClient {
         return Promise.resolve<boolean>(<any>null);
     }
 
-    productsInsert(product: Product): Promise<boolean> {
-        let url_ = this.baseUrl + "/products/insert";
+    /**
+     * @return Success
+     */
+    productsPost(product: Product): Promise<boolean> {
+        let url_ = this.baseUrl + "/products";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(product);
@@ -125,11 +427,11 @@ export class Client extends ClientBase implements IClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.transformResult(url_, _response, (_response: Response) => this.processProductsInsert(_response));
+            return this.transformResult(url_, _response, (_response: Response) => this.processProductsPost(_response));
         });
     }
 
-    protected processProductsInsert(response: Response): Promise<boolean> {
+    protected processProductsPost(response: Response): Promise<boolean> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -139,6 +441,10 @@ export class Client extends ClientBase implements IClient {
             result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return result200;
             });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -147,16 +453,65 @@ export class Client extends ClientBase implements IClient {
         return Promise.resolve<boolean>(<any>null);
     }
 
-    productsExpire(id: number): Promise<boolean> {
-        let url_ = this.baseUrl + "/products/expire/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    /**
+     * @return Success
+     */
+    productsDelete(key: number): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/products";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(key);
+
         let options_ = <RequestInit>{
+            body: content_,
             method: "DELETE",
             headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processProductsDelete(_response));
+        });
+    }
+
+    protected processProductsDelete(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    sessionCurrentBasket(token: AuthedRequest): Promise<Basket> {
+        let url_ = this.baseUrl + "/session/current-basket";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(token);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
@@ -164,11 +519,62 @@ export class Client extends ClientBase implements IClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.transformResult(url_, _response, (_response: Response) => this.processProductsExpire(_response));
+            return this.transformResult(url_, _response, (_response: Response) => this.processSessionCurrentBasket(_response));
         });
     }
 
-    protected processProductsExpire(response: Response): Promise<boolean> {
+    protected processSessionCurrentBasket(response: Response): Promise<Basket> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Basket.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized Request", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Basket>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    sessionUpdateBasket(basketToUpdate: AuthedRequestWrapperOfBasket): Promise<boolean> {
+        let url_ = this.baseUrl + "/session/update-basket";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(basketToUpdate);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processSessionUpdateBasket(_response));
+        });
+    }
+
+    protected processSessionUpdateBasket(response: Response): Promise<boolean> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -178,6 +584,14 @@ export class Client extends ClientBase implements IClient {
             result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return result200;
             });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized Request", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -185,18 +599,118 @@ export class Client extends ClientBase implements IClient {
         }
         return Promise.resolve<boolean>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    sessionPlaceOrder(basketToOrder: AuthedRequestWrapperOfBasket): Promise<boolean> {
+        let url_ = this.baseUrl + "/session/place-order";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(basketToOrder);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processSessionPlaceOrder(_response));
+        });
+    }
+
+    protected processSessionPlaceOrder(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized Request", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    sessionHistoricOrders(token: AuthedRequest): Promise<Basket[]> {
+        let url_ = this.baseUrl + "/session/historic-orders";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(token);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.transformResult(url_, _response, (_response: Response) => this.processSessionHistoricOrders(_response));
+        });
+    }
+
+    protected processSessionHistoricOrders(response: Response): Promise<Basket[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Basket.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            return throwException("Unauthorized Request", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            return throwException("Server Error", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Basket[]>(<any>null);
+    }
 }
 
-export class Product implements IProduct {
-    id?: number;
-    categoryId?: number;
-    name?: string | undefined;
-    description?: string | undefined;
-    imageUrl?: string | undefined;
-    pricePerUnit?: number;
-    dateCreated?: Date;
+export class AuthedRequest implements IAuthedRequest {
+    jwtToken?: string | undefined;
 
-    constructor(data?: IProduct) {
+    constructor(data?: IAuthedRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -206,6 +720,117 @@ export class Product implements IProduct {
     }
 
     init(_data?: any) {
+        if (_data) {
+            this.jwtToken = _data["jwtToken"];
+        }
+    }
+
+    static fromJS(data: any): AuthedRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuthedRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["jwtToken"] = this.jwtToken;
+        return data; 
+    }
+}
+
+export interface IAuthedRequest {
+    jwtToken?: string | undefined;
+}
+
+export class DataStoreItem implements IDataStoreItem {
+    dataStoreId?: number;
+
+    constructor(data?: IDataStoreItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.dataStoreId = _data["dataStoreId"];
+        }
+    }
+
+    static fromJS(data: any): DataStoreItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataStoreItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dataStoreId"] = this.dataStoreId;
+        return data; 
+    }
+}
+
+export interface IDataStoreItem {
+    dataStoreId?: number;
+}
+
+export class Categories extends DataStoreItem implements ICategories {
+    id?: number;
+    category?: string | undefined;
+
+    constructor(data?: ICategories) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.id = _data["id"];
+            this.category = _data["category"];
+        }
+    }
+
+    static fromJS(data: any): Categories {
+        data = typeof data === 'object' ? data : {};
+        let result = new Categories();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["category"] = this.category;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface ICategories extends IDataStoreItem {
+    id?: number;
+    category?: string | undefined;
+}
+
+export class Product extends DataStoreItem implements IProduct {
+    id?: number;
+    categoryId?: number;
+    name?: string | undefined;
+    description?: string | undefined;
+    imageUrl?: string | undefined;
+    pricePerUnit?: number;
+    dateCreated?: Date;
+
+    constructor(data?: IProduct) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.id = _data["id"];
             this.categoryId = _data["categoryId"];
@@ -233,11 +858,12 @@ export class Product implements IProduct {
         data["imageUrl"] = this.imageUrl;
         data["pricePerUnit"] = this.pricePerUnit;
         data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IProduct {
+export interface IProduct extends IDataStoreItem {
     id?: number;
     categoryId?: number;
     name?: string | undefined;
@@ -245,6 +871,99 @@ export interface IProduct {
     imageUrl?: string | undefined;
     pricePerUnit?: number;
     dateCreated?: Date;
+}
+
+export class Basket extends DataStoreItem implements IBasket {
+    selectedProducts?: number[] | undefined;
+    hasPlacedOrder?: boolean;
+    userUid?: string | undefined;
+    dateOrdered?: Date | undefined;
+
+    constructor(data?: IBasket) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["selectedProducts"])) {
+                this.selectedProducts = [] as any;
+                for (let item of _data["selectedProducts"])
+                    this.selectedProducts!.push(item);
+            }
+            this.hasPlacedOrder = _data["hasPlacedOrder"];
+            this.userUid = _data["userUid"];
+            this.dateOrdered = _data["dateOrdered"] ? new Date(_data["dateOrdered"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Basket {
+        data = typeof data === 'object' ? data : {};
+        let result = new Basket();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.selectedProducts)) {
+            data["selectedProducts"] = [];
+            for (let item of this.selectedProducts)
+                data["selectedProducts"].push(item);
+        }
+        data["hasPlacedOrder"] = this.hasPlacedOrder;
+        data["userUid"] = this.userUid;
+        data["dateOrdered"] = this.dateOrdered ? this.dateOrdered.toISOString() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IBasket extends IDataStoreItem {
+    selectedProducts?: number[] | undefined;
+    hasPlacedOrder?: boolean;
+    userUid?: string | undefined;
+    dateOrdered?: Date | undefined;
+}
+
+export class AuthedRequestWrapperOfBasket extends AuthedRequest implements IAuthedRequestWrapperOfBasket {
+    request?: Basket | undefined;
+
+    constructor(data?: IAuthedRequestWrapperOfBasket) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.request = _data["request"] ? Basket.fromJS(_data["request"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AuthedRequestWrapperOfBasket {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuthedRequestWrapperOfBasket();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["request"] = this.request ? this.request.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IAuthedRequestWrapperOfBasket extends IAuthedRequest {
+    request?: Basket | undefined;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class SwaggerException extends Error {

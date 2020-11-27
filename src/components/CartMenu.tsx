@@ -9,7 +9,7 @@ interface CartMenuProps {
 
 export const CartMenu = (props: CartMenuProps) => {
   const [basketModal, toggleBasketModal] = React.useState<boolean>(false);
-  const { basketCount, itemsInBasket } = AppContainer.useContainer();
+  const { basket, itemsInBasket } = AppContainer.useContainer();
   const display = props.show ? "flex" : "none";
   return (
     <>
@@ -20,7 +20,7 @@ export const CartMenu = (props: CartMenuProps) => {
           onClick={() => toggleBasketModal(true)}
         >
           <img src={cart} className="mr-1 mt-1" />
-          <span style={{ verticalAlign: "top" }}>{basketCount}</span>
+          <span style={{ verticalAlign: "top" }}>{basket.length}</span>
         </Badge>
       </div>
       <Modal show={basketModal} onHide={toggleBasketModal}>
@@ -28,15 +28,17 @@ export const CartMenu = (props: CartMenuProps) => {
           <Modal.Title>Your Basket</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          { basketCount > 0 ?
-          <ListGroup>
-            {itemsInBasket().map(({name, pricePerUnit, description}) => (
-              <ListGroup.Item>{name} - {description} £{pricePerUnit}</ListGroup.Item>
-            ) 
-            )}
-            
-            
-          </ListGroup> : <span>Your basket is empty!</span>}
+          {basket.length > 0 ? (
+            <ListGroup>
+              {itemsInBasket().map(({ name, pricePerUnit, description }) => (
+                <ListGroup.Item>
+                  {name} - {description} £{pricePerUnit}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          ) : (
+            <span>Your basket is empty!</span>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => toggleBasketModal(false)}>

@@ -1,8 +1,7 @@
-import apiClient from "../services"
+import apiClient from "../services";
 import { Product } from "../services/Client";
 
-
-export const GetProducts = async () : Promise<Product[] | false> => {
-    const response = await apiClient.productsGet();
-    return response !== undefined ? response : false
-}
+export const GetProducts = async (): Promise<Product[]> => {
+  const response = await apiClient.productsGet();
+  return response;
+};
