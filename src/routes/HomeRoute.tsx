@@ -8,7 +8,7 @@ export const HomeRoute = () => {
       <Jumbotron fluid>
         <Container>
           <h1>Ninebarrow Pet Supplies</h1>
-          <p>Welcome to our new website.We hope you enjoy your stay.</p>
+          <p>Welcome to our new website. We hope you enjoy your stay.</p>
         </Container>
       </Jumbotron>
       <ProductContainer />

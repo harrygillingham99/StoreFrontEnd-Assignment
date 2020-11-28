@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import { AccountModal } from "./components/AccountModal";
 import { AppAlert } from "./components/AppAlert";
 import NavigationBar from "./components/NavigationBar";
-import { AppContainer } from "./state/AppState";
 import { SearchContainer } from "./state/SearchState";
 import { Routes } from "./types/Routes";
 import { HomeRoute } from "./routes/HomeRoute";
@@ -15,13 +14,10 @@ import { NotFoundRoute } from "./routes/NotFoundRoute";
 
 export const Router = () => {
   return (
-    <>
       <BrowserRouter>
         <SearchContainer.Provider>
-          <>
             <NavigationBar />
             <AppAlert />
-          </>
           <Switch>
             <Route exact path="/">
               <Redirect to={Routes.Home} />
@@ -45,6 +41,5 @@ export const Router = () => {
           }}
         </FirebaseAuthConsumer>
       </BrowserRouter>
-    </>
   );
 };

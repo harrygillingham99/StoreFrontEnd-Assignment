@@ -30,8 +30,8 @@ export const CartMenu = (props: CartMenuProps) => {
         <Modal.Body>
           {basket.length > 0 ? (
             <ListGroup>
-              {itemsInBasket().map(({ name, pricePerUnit, description }) => (
-                <ListGroup.Item>
+              {itemsInBasket().map(({ name, pricePerUnit, description, id }) => (
+                <ListGroup.Item id={`${id}-basket-item`}>
                   {name} - {description} £{pricePerUnit}
                 </ListGroup.Item>
               ))}
@@ -41,7 +41,10 @@ export const CartMenu = (props: CartMenuProps) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={() => toggleBasketModal(false)}>
+        <Button variant="primary" onClick={() => toggleBasketModal(false)} disabled={basket.length === 0}>
+            Place order
+          </Button>
+          <Button variant="secondary" onClick={() => toggleBasketModal(false)}>
             Close
           </Button>
         </Modal.Footer>
