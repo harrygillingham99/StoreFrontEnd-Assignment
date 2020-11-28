@@ -36,7 +36,7 @@ export const ProductForm = () => {
     if (newItem) {
       productToSubmit.id = products.reduce((a, b) =>
         (a.id ?? 0) > (b.id ?? 0) ? a : b
-      ).id;
+      ).id ?? 0 + 1;
       InsertProduct(productToSubmit).then((res) =>
         ToggleAlert(
           true,
