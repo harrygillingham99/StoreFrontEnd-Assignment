@@ -4,18 +4,16 @@ import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import { AccountModal } from "./components/AccountModal";
 import { AppAlert } from "./components/AppAlert";
 import NavigationBar from "./components/NavigationBar";
-import { ProductContainer } from "./components/ProductContainer";
 import { AppContainer } from "./state/AppState";
 import { SearchContainer } from "./state/SearchState";
 import { Routes } from "./types/Routes";
-import firebase from "firebase";
-import { Container, Jumbotron } from "react-bootstrap";
+import { HomeRoute } from "./routes/HomeRoute";
+import { AuthHandler } from "./components/AuthHandler";
+import { AdminRoute } from "./routes/AdminRoute";
+import { UnauthorisedRoute } from "./routes/UnauthorisedRoute";
+import { NotFoundRoute } from "./routes/NotFoundRoute";
 
 export const Router = () => {
-  const { setUser } = AppContainer.useContainer();
-
-  const setLoggedInUser = (user: firebase.User | undefined) => setUser(user);
-
   return (
     <>
       <BrowserRouter>
@@ -29,33 +27,21 @@ export const Router = () => {
               <Redirect to={Routes.Home} />
             </Route>
             <Route path={Routes.Home}>
-              <Jumbotron fluid>
-                <Container>
-                  <h1>Ninebarrow Pet Supplies</h1>
-                  <p>
-                    Welcome to our new website. We hope you enjoy your stay.
-                  </p>
-                </Container>
-              </Jumbotron>
-              <ProductContainer />
+              <HomeRoute/>
             </Route>
-            <Route path={Routes.Account}>
-              <div className="">
-                <header className="">
-                  <p>We be routing</p>
-                </header>
-              </div>
+            <Route path={Routes.Admin}>
+              <AdminRoute/>
             </Route>
+            <Route path={Routes.FourOhOne}>
+              <UnauthorisedRoute />
+            </Route>
+            <Route component={NotFoundRoute} />
           </Switch>
           <AccountModal />
         </SearchContainer.Provider>
         <FirebaseAuthConsumer>
           {({ isSignedIn, user }) => {
-            if (isSignedIn === true) {
-              setLoggedInUser(user);
-            } else {
-              setLoggedInUser(undefined);
-            }
+            return (<AuthHandler isSignedIn={isSignedIn} user={user}></AuthHandler>)
           }}
         </FirebaseAuthConsumer>
       </BrowserRouter>

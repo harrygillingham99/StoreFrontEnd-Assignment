@@ -14,6 +14,7 @@ import { CartMenu } from "./CartMenu";
 import { IfFirebaseAuthed, IfFirebaseUnAuthed } from "@react-firebase/auth";
 import { IsUserAdministrator } from "../utils/Admin";
 import { AppAlertContainer } from "../state/AppAlertState";
+import { AdminIcon } from "./AdminIcon";
 
 const NavigationBar = () => {
   const {
@@ -53,6 +54,7 @@ const NavigationBar = () => {
           <Nav.Link href={Routes.Home}>Home</Nav.Link>
         </Nav>
         <Nav className="justify-content-end">
+          {isAdmin && <AdminIcon show={isAdmin}/>}
           <CartMenu show={isLoggedIn} />
           <DropdownButton
             id="basic-nav-dropdown"

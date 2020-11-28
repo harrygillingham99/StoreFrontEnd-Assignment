@@ -14,17 +14,19 @@ export const signInWithGoogle = async (
   setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
 ) => {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  var result = await firebase
+  await firebase
     .auth()
-    .signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  setUser(result.user ?? undefined);
+    .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    .then((res) => setUser(res.user ?? undefined));
 };
 export const signInAnonymously = async (
   setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
 ) => {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  var result = await firebase.auth().signInAnonymously();
-  setUser(result.user ?? undefined);
+  await firebase
+    .auth()
+    .signInAnonymously()
+    .then((res) => setUser(res.user ?? undefined));
 };
 export const signOut = (
   setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
