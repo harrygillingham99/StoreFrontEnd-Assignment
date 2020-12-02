@@ -3,30 +3,21 @@ import { Button, Container, Form } from "react-bootstrap";
 import { Product } from "../services/Client";
 import { AppAlertContainer } from "../state/AppAlertState";
 import { AppContainer } from "../state/AppState";
-import { GetProducts, InsertProduct, UpdateProduct } from "../utils/Products";
+import { InsertProduct, UpdateProduct } from "../utils/Products";
 
 export const ProductForm = () => {
-  const { categories } = AppContainer.useContainer();
-  const [products, SetProducts] = React.useState<Product[]>(null!);
+  const {
+    getCategories,
+    getProducts,
+    allProducts,
+  } = AppContainer.useContainer();
   const [productToSubmit, setProductToSubmit] = React.useState<Product>();
   const [newItem, setNewItem] = React.useState<boolean>(true);
   const { ToggleAlert } = AppAlertContainer.useContainer();
 
-  React.useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        GetProducts().then((res) => SetProducts(res));
-      } catch (ex) {
-        ToggleAlert(
-          true,
-          "danger",
-          "Error!",
-          "Failed to fetch the latest products"
-        );
-      }
-    };
-    fetchProducts();
-  }, []);
+  const products = getProducts();
+
+  const categories = getCategories();
 
   const handleSubmit = () => {
     console.log(productToSubmit?.id);
@@ -34,9 +25,9 @@ export const ProductForm = () => {
       return;
     }
     if (newItem) {
-      productToSubmit.id = products.reduce((a, b) =>
-        (a.id ?? 0) > (b.id ?? 0) ? a : b
-      ).id ?? 0 + 1;
+      productToSubmit.id =
+        products.reduce((a, b) => ((a.id ?? 0) > (b.id ?? 0) ? a : b)).id ??
+        0 + 1;
       InsertProduct(productToSubmit).then((res) =>
         ToggleAlert(
           true,
@@ -45,15 +36,16 @@ export const ProductForm = () => {
           `${res ? "Success creating" : "Failed to create"} new product.`
         )
       );
+    } else {
+      UpdateProduct(productToSubmit).then((res) =>
+        ToggleAlert(
+          true,
+          res ? "success" : "danger",
+          res ? "Success!" : "Error!",
+          `${res ? "Success updating" : "Failed to update"} the product.`
+        )
+      );
     }
-    UpdateProduct(productToSubmit).then((res) =>
-      ToggleAlert(
-        true,
-        res ? "success" : "danger",
-        res ? "Success!" : "Error!",
-        `${res ? "Success updating" : "Failed to update"} the product.`
-      )
-    );
   };
 
   const handleSelectedProductChange = (id: string) => {
@@ -62,8 +54,9 @@ export const ProductForm = () => {
       setProductToSubmit(new Product());
       return;
     }
-    var selectedProduct = products.find((x) => x.id === Number.parseInt(id));
+    var selectedProduct = allProducts.find((x) => x.id === Number.parseInt(id));
     setNewItem(false);
+    console.log(selectedProduct);
     setProductToSubmit(selectedProduct);
   };
   return (
@@ -81,7 +74,7 @@ export const ProductForm = () => {
             New Product
           </option>
           {products?.map((x) => (
-            <option value={x.id} id={`${x.name}-option`}>
+            <option value={x.id} key={`${x.name}-${x.dataStoreId}`}>
               {x.name}
             </option>
           ))}
@@ -115,11 +108,10 @@ export const ProductForm = () => {
             product.categoryId = Number.parseInt(e.target.value);
             setProductToSubmit(product);
           }}
-          custom
           defaultValue={productToSubmit?.categoryId}
         >
           {categories?.map((x) => (
-            <option value={x.id} id={`${x.category}-option`}>
+            <option value={x.id} key={`${x.category}-${x.dataStoreId}`}>
               {x.category}
             </option>
           ))}

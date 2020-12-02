@@ -11,7 +11,7 @@ export const firebaseConfig = {
 };
 
 export const signInWithGoogle = async (
-  setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
+  setUser: (user: firebase.User | undefined) => void
 ) => {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   await firebase
@@ -20,7 +20,7 @@ export const signInWithGoogle = async (
     .then((res) => setUser(res.user ?? undefined));
 };
 export const signInAnonymously = async (
-  setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
+  setUser: (user: firebase.User | undefined) => void
 ) => {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   await firebase
@@ -28,9 +28,7 @@ export const signInAnonymously = async (
     .signInAnonymously()
     .then((res) => setUser(res.user ?? undefined));
 };
-export const signOut = (
-  setUser: (value: React.SetStateAction<firebase.User | undefined>) => void
-) => {
+export const signOut = (setUser: (user: firebase.User | undefined) => void) => {
   firebase
     .auth()
     .signOut()

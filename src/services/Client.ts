@@ -53,11 +53,11 @@ export interface IClient {
     /**
      * @return Success
      */
-    sessionUpdateBasket(basketToUpdate: AuthedRequestWrapperOfBasket): Promise<boolean>;
+    sessionUpdateBasket(basketToUpdate: AuthedBasketRequestWrapper): Promise<boolean>;
     /**
      * @return Success
      */
-    sessionPlaceOrder(basketToOrder: AuthedRequestWrapperOfBasket): Promise<boolean>;
+    sessionPlaceOrder(basketToOrder: AuthedBasketRequestWrapper): Promise<boolean>;
     /**
      * @return Success
      */
@@ -552,7 +552,7 @@ export class Client extends ClientBase implements IClient {
     /**
      * @return Success
      */
-    sessionUpdateBasket(basketToUpdate: AuthedRequestWrapperOfBasket): Promise<boolean> {
+    sessionUpdateBasket(basketToUpdate: AuthedBasketRequestWrapper): Promise<boolean> {
         let url_ = this.baseUrl + "/session/update-basket";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -560,7 +560,7 @@ export class Client extends ClientBase implements IClient {
 
         let options_ = <RequestInit>{
             body: content_,
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -603,7 +603,7 @@ export class Client extends ClientBase implements IClient {
     /**
      * @return Success
      */
-    sessionPlaceOrder(basketToOrder: AuthedRequestWrapperOfBasket): Promise<boolean> {
+    sessionPlaceOrder(basketToOrder: AuthedBasketRequestWrapper): Promise<boolean> {
         let url_ = this.baseUrl + "/session/place-order";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -743,7 +743,7 @@ export interface IAuthedRequest {
     jwtToken?: string | undefined;
 }
 
-export class DataStoreItem implements IDataStoreItem {
+export abstract class DataStoreItem implements IDataStoreItem {
     dataStoreId?: number;
 
     constructor(data?: IDataStoreItem) {
@@ -763,9 +763,7 @@ export class DataStoreItem implements IDataStoreItem {
 
     static fromJS(data: any): DataStoreItem {
         data = typeof data === 'object' ? data : {};
-        let result = new DataStoreItem();
-        result.init(data);
-        return result;
+        throw new Error("The abstract class 'DataStoreItem' cannot be instantiated.");
     }
 
     toJSON(data?: any) {
@@ -873,23 +871,29 @@ export interface IProduct extends IDataStoreItem {
     dateCreated?: Date;
 }
 
-export class Basket extends DataStoreItem implements IBasket {
-    selectedProducts?: number[] | undefined;
+export class Basket implements IBasket {
+    dataStoreId?: number;
+    productAndQuantity?: ItemAndAmount[] | undefined;
     hasPlacedOrder?: boolean;
     userUid?: string | undefined;
     dateOrdered?: Date | undefined;
 
     constructor(data?: IBasket) {
-        super(data);
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
 
     init(_data?: any) {
-        super.init(_data);
         if (_data) {
-            if (Array.isArray(_data["selectedProducts"])) {
-                this.selectedProducts = [] as any;
-                for (let item of _data["selectedProducts"])
-                    this.selectedProducts!.push(item);
+            this.dataStoreId = _data["dataStoreId"];
+            if (Array.isArray(_data["productAndQuantity"])) {
+                this.productAndQuantity = [] as any;
+                for (let item of _data["productAndQuantity"])
+                    this.productAndQuantity!.push(ItemAndAmount.fromJS(item));
             }
             this.hasPlacedOrder = _data["hasPlacedOrder"];
             this.userUid = _data["userUid"];
@@ -906,57 +910,105 @@ export class Basket extends DataStoreItem implements IBasket {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.selectedProducts)) {
-            data["selectedProducts"] = [];
-            for (let item of this.selectedProducts)
-                data["selectedProducts"].push(item);
+        data["dataStoreId"] = this.dataStoreId;
+        if (Array.isArray(this.productAndQuantity)) {
+            data["productAndQuantity"] = [];
+            for (let item of this.productAndQuantity)
+                data["productAndQuantity"].push(item.toJSON());
         }
         data["hasPlacedOrder"] = this.hasPlacedOrder;
         data["userUid"] = this.userUid;
         data["dateOrdered"] = this.dateOrdered ? this.dateOrdered.toISOString() : <any>undefined;
-        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IBasket extends IDataStoreItem {
-    selectedProducts?: number[] | undefined;
+export interface IBasket {
+    dataStoreId?: number;
+    productAndQuantity?: ItemAndAmount[] | undefined;
     hasPlacedOrder?: boolean;
     userUid?: string | undefined;
     dateOrdered?: Date | undefined;
 }
 
-export class AuthedRequestWrapperOfBasket extends AuthedRequest implements IAuthedRequestWrapperOfBasket {
-    request?: Basket | undefined;
+export class ItemAndAmount implements IItemAndAmount {
+    itemId?: number;
+    quantity?: number;
 
-    constructor(data?: IAuthedRequestWrapperOfBasket) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.request = _data["request"] ? Basket.fromJS(_data["request"]) : <any>undefined;
+    constructor(data?: IItemAndAmount) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
     }
 
-    static fromJS(data: any): AuthedRequestWrapperOfBasket {
+    init(_data?: any) {
+        if (_data) {
+            this.itemId = _data["itemId"];
+            this.quantity = _data["quantity"];
+        }
+    }
+
+    static fromJS(data: any): ItemAndAmount {
         data = typeof data === 'object' ? data : {};
-        let result = new AuthedRequestWrapperOfBasket();
+        let result = new ItemAndAmount();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["request"] = this.request ? this.request.toJSON() : <any>undefined;
-        super.toJSON(data);
+        data["itemId"] = this.itemId;
+        data["quantity"] = this.quantity;
         return data; 
     }
 }
 
-export interface IAuthedRequestWrapperOfBasket extends IAuthedRequest {
-    request?: Basket | undefined;
+export interface IItemAndAmount {
+    itemId?: number;
+    quantity?: number;
+}
+
+export class AuthedBasketRequestWrapper implements IAuthedBasketRequestWrapper {
+    basket?: Basket | undefined;
+    token?: AuthedRequest | undefined;
+
+    constructor(data?: IAuthedBasketRequestWrapper) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.basket = _data["basket"] ? Basket.fromJS(_data["basket"]) : <any>undefined;
+            this.token = _data["token"] ? AuthedRequest.fromJS(_data["token"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AuthedBasketRequestWrapper {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuthedBasketRequestWrapper();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["basket"] = this.basket ? this.basket.toJSON() : <any>undefined;
+        data["token"] = this.token ? this.token.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAuthedBasketRequestWrapper {
+    basket?: Basket | undefined;
+    token?: AuthedRequest | undefined;
 }
 
 export interface FileResponse {

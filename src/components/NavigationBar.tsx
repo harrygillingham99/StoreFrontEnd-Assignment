@@ -18,7 +18,7 @@ import { AdminIcon } from "./AdminIcon";
 
 const NavigationBar = () => {
   const {
-    setUser,
+    SetUser,
     user,
     toggleAccountModal,
     setAdmin,
@@ -29,6 +29,7 @@ const NavigationBar = () => {
   React.useEffect(() => {
     const IsAdminUser = () => {
       if (user === undefined) return;
+
       IsUserAdministrator(user)
         .then((res) => setAdmin(res))
         .catch((ex) =>
@@ -69,10 +70,10 @@ const NavigationBar = () => {
               <IfFirebaseUnAuthed>
                 {() => (
                   <>
-                    <Dropdown.Item onClick={() => signInWithGoogle(setUser)}>
+                    <Dropdown.Item onClick={() => signInWithGoogle(SetUser)}>
                       Login with Google
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => signInAnonymously(setUser)}>
+                    <Dropdown.Item onClick={() => signInAnonymously(SetUser)}>
                       Login as Guest
                     </Dropdown.Item>
                   </>
@@ -85,7 +86,7 @@ const NavigationBar = () => {
                       <Dropdown.Item onClick={() => toggleAccountModal(true)}>
                         Account
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => signOut(setUser)}>
+                      <Dropdown.Item onClick={() => signOut(SetUser)}>
                         Sign Out
                       </Dropdown.Item>
                     </>

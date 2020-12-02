@@ -8,12 +8,12 @@ interface IAuthHandlerProps {
 }
 export const AuthHandler = (props: IAuthHandlerProps) => {
   const { isSignedIn, user } = props;
-  const { setUser, setAdmin } = AppContainer.useContainer();
+  const { SetUser, setAdmin } = AppContainer.useContainer();
   if (isSignedIn === true) {
-    setUser(user);
+    SetUser(user);
   } else {
     setAdmin(false);
-    setUser(undefined);
+    SetUser(undefined);
   }
 
   return <></>;

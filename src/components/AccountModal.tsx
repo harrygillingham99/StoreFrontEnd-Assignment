@@ -10,6 +10,7 @@ export const AccountModal = () => {
     showAccountModal,
     toggleAccountModal,
     user,
+    allProducts
   } = AppContainer.useContainer();
   const { ToggleAlert } = AppAlertContainer.useContainer();
   const [historicOrders, setHistoricOrders] = React.useState<
@@ -67,8 +68,8 @@ export const AccountModal = () => {
             {historicOrders !== null &&
               historicOrders !== undefined &&
               historicOrders.map((order) => (
-                <p>
-                  {order.selectedProducts} {order.dateOrdered}
+                <p key={order.dataStoreId}>
+                  {order.productAndQuantity?.map(y => `${y.quantity} of  ${allProducts.find(x => x.id === y.itemId)?.name}`)} on {order.dateOrdered?.toDateString()}
                 </p>
               ))}
           </Modal.Body>
