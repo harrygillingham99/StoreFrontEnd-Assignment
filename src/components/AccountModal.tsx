@@ -10,7 +10,7 @@ export const AccountModal = () => {
     showAccountModal,
     toggleAccountModal,
     user,
-    allProducts
+    allProducts,
   } = AppContainer.useContainer();
   const { ToggleAlert } = AppAlertContainer.useContainer();
   const [historicOrders, setHistoricOrders] = React.useState<
@@ -62,16 +62,28 @@ export const AccountModal = () => {
     <Modal show={showAccountModal}>
       {!user?.isAnonymous ? (
         <>
-          <ModalHeader displayName={user?.displayName} />
+          <ModalHeader displayName={user?.displayName ?? user?.email} />
           <Modal.Body>
             <Image src={user?.photoURL ?? ""} />
             {historicOrders !== null &&
-              historicOrders !== undefined &&
+            historicOrders !== undefined &&
+            historicOrders.length > 0 ? (
               historicOrders.map((order) => (
                 <p key={order.dataStoreId}>
-                  {order.productAndQuantity?.map(y => `${y.quantity} of  ${allProducts.find(x => x.id === y.itemId)?.name}`)} on {order.dateOrdered?.toDateString()}
+                  {order.productAndQuantity?.map(
+                    (y) =>
+                      `${y.quantity} of  ${
+                        allProducts.find((x) => x.id === y.itemId)?.name
+                      } `
+                  )}{" "}
+                  on {order.dateOrdered?.toDateString()}
                 </p>
-              ))}
+              ))
+            ) : (
+              <div className="text-center">
+                <p>No Historic Orders!</p>
+              </div>
+            )}
           </Modal.Body>
           <ModalFooter />
         </>

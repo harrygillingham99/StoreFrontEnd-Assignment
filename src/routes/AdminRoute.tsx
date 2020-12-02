@@ -45,8 +45,6 @@ export const AdminRoute = () => {
         <Tab eventKey={AdminTabs.Categories} title={AdminTabs.Categories}>
             <CategoriesForm />
         </Tab>
-        <Tab eventKey={AdminTabs.Orders} title={AdminTabs.Orders}></Tab>
-        <Tab eventKey={AdminTabs.Utilities} title={AdminTabs.Utilities}></Tab>
       </Tabs>
     </>
   );

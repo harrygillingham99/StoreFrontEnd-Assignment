@@ -53,8 +53,9 @@ export const CartMenu = (props: CartMenuProps) => {
               {itemsInBasket().map(
                 ({ name, pricePerUnit, description, id }) => (
                   <ListGroup.Item key={`${name}-basket-item`}>
-                    {name} - {description} £{pricePerUnit}
+                    {name} - {description} £{pricePerUnit?.toFixed(2)}
                     <Button
+                      style={{float: "right"}}
                       onClick={() => {
                         toggleBasketModal(false)
                         RemoveItemFromBasket(id);

@@ -20,7 +20,6 @@ export const ProductForm = () => {
   const categories = getCategories();
 
   const handleSubmit = () => {
-    console.log(productToSubmit?.id);
     if (products === undefined || productToSubmit === undefined) {
       return;
     }
@@ -56,7 +55,6 @@ export const ProductForm = () => {
     }
     var selectedProduct = allProducts.find((x) => x.id === Number.parseInt(id));
     setNewItem(false);
-    console.log(selectedProduct);
     setProductToSubmit(selectedProduct);
   };
   return (

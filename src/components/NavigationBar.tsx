@@ -15,6 +15,7 @@ import { IfFirebaseAuthed, IfFirebaseUnAuthed } from "@react-firebase/auth";
 import { IsUserAdministrator } from "../utils/Admin";
 import { AppAlertContainer } from "../state/AppAlertState";
 import { AdminIcon } from "./AdminIcon";
+import { EmailPasswordModal } from "./EmailPasswordModal";
 
 const NavigationBar = () => {
   const {
@@ -25,6 +26,9 @@ const NavigationBar = () => {
     isAdmin,
   } = AppContainer.useContainer();
   const { ToggleAlert } = AppAlertContainer.useContainer();
+  const [emailPasswordModal, setEmailPasswordModal] = React.useState<boolean>(
+    false
+  );
 
   React.useEffect(() => {
     const IsAdminUser = () => {
@@ -32,7 +36,7 @@ const NavigationBar = () => {
 
       IsUserAdministrator(user)
         .then((res) => setAdmin(res))
-        .catch((ex) =>
+        .catch(() =>
           ToggleAlert(
             true,
             "danger",
@@ -55,7 +59,7 @@ const NavigationBar = () => {
           <Nav.Link href={Routes.Home}>Home</Nav.Link>
         </Nav>
         <Nav className="justify-content-end">
-          {isAdmin && <AdminIcon show={isAdmin}/>}
+          {isAdmin && <AdminIcon show={isAdmin} />}
           <CartMenu show={isLoggedIn} />
           <DropdownButton
             id="basic-nav-dropdown"
@@ -72,6 +76,9 @@ const NavigationBar = () => {
                   <>
                     <Dropdown.Item onClick={() => signInWithGoogle(SetUser)}>
                       Login with Google
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setEmailPasswordModal(true)}>
+                      Login with Email and Password
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => signInAnonymously(SetUser)}>
                       Login as Guest
@@ -97,6 +104,11 @@ const NavigationBar = () => {
           </DropdownButton>
         </Nav>
       </Navbar.Collapse>
+      <EmailPasswordModal
+        SetUser={SetUser}
+        setEmailPasswordModal={setEmailPasswordModal}
+        show={emailPasswordModal}
+      />
     </Navbar>
   );
 };

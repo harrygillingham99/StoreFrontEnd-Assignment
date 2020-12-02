@@ -24,6 +24,7 @@ export const ProductContainer = () => {
     getCategories,
     setProducts,
     allProducts,
+    user
   } = AppContainer.useContainer();
 
   const productsList = getProducts();
@@ -67,7 +68,7 @@ export const ProductContainer = () => {
                   </Card.Title>
                   <Image src={product.imageUrl} thumbnail />
                   <Card.Text>{product.description}</Card.Text>
-                  <Card.Text>Price per unit: £{product.pricePerUnit}</Card.Text>
+                  <Card.Text>Price per unit: £{product.pricePerUnit?.toFixed(2)}</Card.Text>
                 </Card.Body>
                 <Card.Footer>
                   <Form>
@@ -81,6 +82,7 @@ export const ProductContainer = () => {
                           onChange={(evt) => {
                             setQuantity(Number.parseInt(evt.target.value));
                           }}
+                          disabled={user === null || user === undefined}
                         />
                       </Col>
                       <Col>
@@ -93,6 +95,7 @@ export const ProductContainer = () => {
                             AddItemToBasket(product.id, quantity)}}
                           title="Add to basket"
                           className="h-100"
+                          disabled={user === null || user === undefined}
                         >
                           Add To Basket
                         </Button>

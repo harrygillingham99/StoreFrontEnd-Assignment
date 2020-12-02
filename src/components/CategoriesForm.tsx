@@ -3,10 +3,7 @@ import { Button, Container, Form } from "react-bootstrap";
 import { Categories } from "../services/Client";
 import { AppAlertContainer } from "../state/AppAlertState";
 import { AppContainer } from "../state/AppState";
-import {
-  InsertCategory,
-  UpdateCategory,
-} from "../utils/Categories";
+import { InsertCategory, UpdateCategory } from "../utils/Categories";
 
 export const CategoriesForm = () => {
   const { getCategories } = AppContainer.useContainer();

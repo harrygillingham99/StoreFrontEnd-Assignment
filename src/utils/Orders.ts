@@ -36,7 +36,6 @@ export const UpdateBasket = async (user: firebase.User | undefined, basketToUpda
   if (user === undefined) return;
 
   var token = await user.getIdToken();
-  console.log(basketToUpdate);
   var result = await apiClient.sessionUpdateBasket(
     new AuthedBasketRequestWrapper({
       token: new AuthedRequest({jwtToken: token}),

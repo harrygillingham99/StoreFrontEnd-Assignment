@@ -37,10 +37,7 @@ const useAppState = () => {
       GetBasket(user);
     }
     
-    
     const currentBasket = basket;
-
-    console.log(basket)
 
     if (currentBasket.productAndQuantity === undefined || currentBasket.productAndQuantity === null) {
       currentBasket.productAndQuantity = [];
@@ -51,7 +48,7 @@ const useAppState = () => {
     if(itemAlreadyInBasket)
     {
     var index = basket.productAndQuantity?.indexOf(itemAlreadyInBasket);
-    console.log(itemAlreadyInBasket)
+
     if (index !== undefined) {
       currentBasket.productAndQuantity[index].quantity = quantity;
       return;
@@ -66,8 +63,6 @@ const useAppState = () => {
       ) ?? 0
     );
 
-    console.log(currentBasket);
-
     updateBasket(currentBasket);
 
     setTimeout(() => UpdateBasket(user, currentBasket), 1000);
@@ -76,7 +71,6 @@ const useAppState = () => {
   const GetBasket = (user: firebase.User | undefined) => {
     if ((basket === undefined || basket === null) && user !== undefined)
       GetCurrentBasket(user).then((res) => {
-        console.log(res)
         if (res !== undefined && res !== null) {
           if (
             res.productAndQuantity === undefined ||

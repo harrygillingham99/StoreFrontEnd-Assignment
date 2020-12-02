@@ -6,12 +6,12 @@ export const GetProducts = async (): Promise<Product[]> => {
   return response;
 };
 
-export const UpdateProduct = async (product : Product): Promise<boolean> => {
+export const UpdateProduct = async (product: Product): Promise<boolean> => {
   const response = await apiClient.productsPut(product);
   return response;
 };
 
-export const InsertProduct = async (product : Product): Promise<boolean> => {
+export const InsertProduct = async (product: Product): Promise<boolean> => {
   const response = await apiClient.productsPost(product);
   return response;
 };
