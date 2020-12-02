@@ -18,11 +18,11 @@ You will also see any lint errors in the console.
 
 ### `npm run generate-store-client`
 
-Will go to the OpenAPI endpoint specified in store-api.nswag then generate and output a client library.\
+Will go to the OpenAPI endpoint specified in store-api.nswag then generate and output a client library.
 
 ### `npm run deploy`
 
-Runs a build then a `gcloud app deploy --stop-previous-version`.\
+Runs a build then a `gcloud app deploy --stop-previous-version`.
 
 You will need to have the Cloud SDK installed and the GOOGLE_APPLICATION_CREDENTIALS environment variable set up correctly.
 
