@@ -1,6 +1,6 @@
 # Store Front End AD Assignment 2020-21
 
-Recieved 77/100
+Received 77/100
 
 A front end Node/TypeScript React project for the e-commerce assignment
 
