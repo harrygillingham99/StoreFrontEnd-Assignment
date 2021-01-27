@@ -1,5 +1,7 @@
 # Store Front End AD Assignment 2020-21
 
+Recieved 77/100
+
 A front end Node/TypeScript React project for the e-commerce assignment
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
